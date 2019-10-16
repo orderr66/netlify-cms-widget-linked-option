@@ -1,12 +1,4 @@
-import RelationControl from './Control';
-import Preview from './Preview';
+import RelationControl from './Control.js';
+import Preview from './Preview.js';
 
-const Widget = (opts = {}) => ({
-  name: 'relation',
-  RelationControl,
-  Preview,
-  ...opts,
-});
-
-export const NetlifyCmsWidgetRelation = { Widget, RelationControl, Preview };
-export default NetlifyCmsWidgetRelation;
+export { RelationControl as optionControl, Preview as optionPreview };

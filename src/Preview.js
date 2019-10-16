@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const  Preview = ({ value }) => {
+const Preview = ({ value }) => {
   return <div>{ value }</div>;
 }
 
