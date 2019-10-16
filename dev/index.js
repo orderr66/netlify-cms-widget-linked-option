@@ -1,7 +1,9 @@
 import './bootstrap.js'
 import CMS, { init } from 'netlify-cms'
 import 'netlify-cms/dist/cms.css'
-import { Control, Preview } from '../src'
+import Preview from '../src/Preview'
+import RelationControl from '../src/Control'
+
 
 const config = {
   backend: {
@@ -17,12 +19,29 @@ const config = {
       name: 'test',
       label: 'Test',
       fields: [
-        { name: 'test_widget', label: 'Test Widget', widget: 'test'},
+        {label: "Series",
+        name: "title",
+        widget: 'test',
+        collection: "series",
+        searchFields: ["title"],
+        valueField: "title"},
       ],
     }],
-  }],
+  },
+  {
+    name: 'series',
+    label: 'Series',
+    folder: 'content/series',
+    create: true,
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
+    identifier_field: 'slug',
+    fields: [
+      { name: 'title', label: 'Test Widget', widget: 'string'},
+    ],
+  }
+],
 }
 
-CMS.registerWidget('test', Control, Preview)
+CMS.registerWidget('test', RelationControl, Preview)
 
 init({ config })

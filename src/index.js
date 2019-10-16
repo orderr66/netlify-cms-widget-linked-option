@@ -1,9 +1,12 @@
-import Control from './Control'
-import Preview from './Preview'
+import RelationControl from './Control';
+import Preview from './Preview';
 
-if (typeof window !== 'undefined') {
-  window.Control = Control
-  window.Preview = Preview
-}
+const Widget = (opts = {}) => ({
+  name: 'relation',
+  RelationControl,
+  Preview,
+  ...opts,
+});
 
-export { Control, Preview }
+export const NetlifyCmsWidgetRelation = { Widget, RelationControl, Preview };
+export default NetlifyCmsWidgetRelation;
