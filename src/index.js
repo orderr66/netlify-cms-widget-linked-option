@@ -1,4 +1,9 @@
-import RelationControl from './Control.js';
-import Preview from './Preview.js';
+import controlComponent from './Control';
+import previewComponent from './Preview';
 
-export { RelationControl as optionControl, Preview as optionPreview };
+if (typeof window !== "undefined") {
+	window.optionComponent = controlComponent;
+	window.optionPreview = previewComponent;
+}
+
+export { controlComponent as optionComponent, previewComponent as optionPreview };

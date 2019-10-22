@@ -2,7 +2,7 @@
   "name": "netlify-cms-widget-linked-option",
   "description": "A linked combo widget.",
   "repository": "https://github.com/orderr66/netlify-cms-widget-starter",
-  "version": "0.1.1",
+  "version": "0.5.1",
   "license": "MIT",
   "main": "dist/main.js",
   "devDependencies": {

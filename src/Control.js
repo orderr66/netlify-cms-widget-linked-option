@@ -4,6 +4,9 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import AsyncSelect from 'react-select/lib/Async';
 import { find, isEmpty, last, debounce } from 'lodash';
 import { List, Map, fromJS } from 'immutable';
+import Select from 'react-select'
+import './Styless.css'
+
 
 function optionToString(option) {
   return option && option.value ? option.value : '';
@@ -49,6 +52,12 @@ export default class RelationControl extends React.Component {
     setInactiveStyle: PropTypes.func.isRequired,
   };
 
+  state = {
+    optionData: '',
+    optArray: [],
+    episodeValue: ''
+  }
+
   shouldComponentUpdate(nextProps) {
     return (
       this.props.value !== nextProps.value ||
@@ -88,7 +97,6 @@ export default class RelationControl extends React.Component {
     const { onChange, field } = this.props;
     let value;
     let metadata;
-
     if (Array.isArray(selectedOption)) {
       value = selectedOption.map(optionToString);
       metadata =
@@ -156,6 +164,9 @@ export default class RelationControl extends React.Component {
     const searchFieldsArray = List.isList(searchFields) ? searchFields.toJS() : [searchFields];
 
     query(forID, collection, searchFieldsArray, term).then(({ payload }) => {
+      if (payload.response.hits){
+        this.setState({ optionData: payload.response.hits })
+      }
       let options = this.parseHitOptions(payload.response.hits);
 
       if (!this.allOptions && !term) {
@@ -170,6 +181,29 @@ export default class RelationControl extends React.Component {
     });
   }, 500);
 
+  getRelatedItems = () => {
+    const { optionData} = this.state
+    let optionArray = []
+    const { value  } = this.props
+    optionArray.push('Select A Episode')
+    Object.entries(optionData).map(([index, obj]) => {
+      if (obj.data.title === value) {
+        if(obj.data.episodes) {
+          Object.entries(obj.data.episodes).map(([episodeIdx, episode]) => {
+            optionArray.push(episode.youtubeURL.title)
+          })
+        }
+      }
+    })
+    this.setState({ optArray: optionArray })
+  }
+
+  handleSelectChange = (e) => {
+    this.setState({
+      episodeValue: e.target.value
+    })
+  }
+
   render() {
     const {
       value,
@@ -180,7 +214,11 @@ export default class RelationControl extends React.Component {
       setInactiveStyle,
       queryHits,
     } = this.props;
-    console.log(this.props)
+    console.log('ayee', this.props)
+    const { optArray, episodeValue } = this.state
+    if(value) {
+      this.getRelatedItems()
+    }
     const isMultiple = field.get('multiple', false);
     const isClearable = !field.get('required', true) || isMultiple;
 
@@ -193,19 +231,69 @@ export default class RelationControl extends React.Component {
     });
 
     return (
-      <AsyncSelect
-        value={selectedValue}
-        inputId={forID}
-        defaultOptions
-        loadOptions={this.loadOptions}
-        onChange={this.handleChange}
-        className={classNameWrapper}
-        onFocus={setActiveStyle}
-        onBlur={setInactiveStyle}
-        isMulti={isMultiple}
-        isClearable={isClearable}
-        placeholder=""
-      />
+      <div id={forID} className={classNameWrapper}>
+        <AsyncSelect
+          value={selectedValue}
+          inputId={forID}
+          defaultOptions
+          loadOptions={this.loadOptions}
+          onChange={this.handleChange}
+          className={classNameWrapper}
+          onFocus={setActiveStyle}
+          onBlur={setInactiveStyle}
+          isMulti={isMultiple}
+          isClearable={isClearable}
+          placeholder=""
+        />
+        {optArray.length > 0 && (
+          <div>
+            <label
+            style={{
+              backgroundColor: "#dfdfe3",
+              border: "0",
+              borderRadius: "3px 3px 0 0",
+              color: "#7a8291",
+              fontSize: "12px",
+              fontWeight: "600",
+              margin: "0",
+              padding: "3px 6px 2px",
+              position: "relative",
+              textTransform: "uppercase",
+              transition: "all .2s ease"
+            }}
+            >
+            Episode
+            </label>
+            <div className="DrowdownField">
+              <div className="innerField">
+                <div className="dropdownField">
+                  <select onChange={this.handleSelectChange} >
+                    {optArray.map(item => (
+                      <option value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="logoField">
+                  <span className="spanField"/>
+                  <div className="svgField">
+                    <svg height="20" width="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false" class="css-19bqh2r">
+                      <path d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input
+              type="text"
+              style={{ display: 'none' }}
+              value={episodeValue}
+          />
+          </div>
+        )}
+      </div>
     );
   }
 }
+
